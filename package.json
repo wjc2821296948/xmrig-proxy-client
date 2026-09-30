@@ -1,0 +1,41 @@
+{
+  "name": "xmrig-proxy-client",
+  "version": "0.1.0",
+  "description": "Zero-dependency XMRig Proxy API client and health monitor for Node.js, browsers, Deno, Bun, and Cloudflare Workers.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "tests",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "xmrig",
+    "xmrig-proxy",
+    "mining",
+    "stratum",
+    "monero",
+    "api-client",
+    "health-monitor"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wjc2821296948/xmrig-proxy-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wjc2821296948/xmrig-proxy-client/issues"
+  },
+  "homepage": "https://github.com/wjc2821296948/xmrig-proxy-client#readme"
+}
