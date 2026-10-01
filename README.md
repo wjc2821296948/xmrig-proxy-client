@@ -10,6 +10,28 @@ The package extracts the reusable pieces from the companion [XMRig Proxy Dashboa
 npm install xmrig-proxy-client
 ```
 
+## 发布渠道
+
+每次发布 GitHub Release（tag 必须与 `package.json` 版本对应，例如 `v0.1.0`），`.github/workflows/publish.yml` 会自动执行测试并发布到两个注册表：
+
+- **npmjs.com**：`xmrig-proxy-client`
+- **GitHub Packages**：`@wjc2821296948/xmrig-proxy-client`
+
+GitHub Packages 使用同一个 `repository` 字段关联到本仓库，因此发布后可以直接在仓库的 **Packages** 中管理版本。GitHub Packages 的 npm 注册表只接受 scoped package，所以 workflow 会在发布前临时生成 `@wjc2821296948/xmrig-proxy-client`，不会改变 npmjs.com 上的包名。
+
+### 首次配置 npm Trusted Publishing
+
+在 npmjs.com 的 `xmrig-proxy-client` 包设置中添加 GitHub Actions Trusted Publisher，并填写：
+
+- GitHub owner: `wjc2821296948`
+- Repository: `xmrig-proxy-client`
+- Workflow filename: `publish.yml`
+
+之后 GitHub Actions 使用 OIDC 发布 npm，不需要在仓库里保存长期 npm Token。
+
+GitHub Packages 发布使用工作流自带的 `GITHUB_TOKEN`，需要的 `packages: write` 权限已经写入 workflow。
+
+> 注意：GitHub Packages 的 npm 包首次发布默认是 **Private**。首次发布后，请在 GitHub 的 Package settings 中将其改为 **Public**；之后新版本会继续沿用该可见性设置。
 ## API client
 
 ```js
