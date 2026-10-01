@@ -17,6 +17,6 @@ for (const entry of ["src", "tests", "README.md", "LICENSE"]) {
 
 await writeFile(
   path.join(output, "package.json"),
-  JSON.stringify(packageJson, null, 2) + "\\n",
+  JSON.stringify(packageJson, null, 2) + "\n",
   "utf8",
 );
