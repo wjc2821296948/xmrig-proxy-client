@@ -1,6 +1,6 @@
 {
   "name": "xmrig-proxy-client",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Zero-dependency XMRig Proxy API client and health monitor for Node.js, browsers, Deno, Bun, and Cloudflare Workers.",
   "type": "module",
   "exports": {
