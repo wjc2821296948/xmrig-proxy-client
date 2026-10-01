@@ -10,7 +10,40 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
+  publish-github-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com/
+          package-manager-cache: false
+
+      - name: Run tests
+        run: npm test
+
+      - name: Validate release version
+        shell: bash
+        run: |
+          package_version="$(node -p 'require("./package.json").version')"
+          release_tag="${{ github.event.release.tag_name }}"
+          test "$release_tag" = "v$package_version"
+
+      - name: Prepare GitHub Packages package
+        run: node scripts/prepare-github-package.mjs
+
+      - name: Publish to GitHub Packages
+        working-directory: .github-package
+        run: npm publish --registry=https://npm.pkg.github.com/ --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    needs: publish-github-packages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,31 +56,5 @@ jobs:
           registry-url: https://registry.npmjs.org/
           package-manager-cache: false
 
-      - name: Run tests
-        run: npm test
-
-      - name: Validate release version
-        shell: bash
-        run: |
-          package_version="$(node -p 'require(\"./package.json\").version')"
-          release_tag="${{ github.event.release.tag_name }}"
-          test "$release_tag" = "v$package_version"
-
       - name: Publish to npmjs.com
         run: npm publish --access public
-
-      - name: Setup GitHub Packages registry
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: https://npm.pkg.github.com/
-          package-manager-cache: false
-
-      - name: Prepare GitHub Packages package
-        run: node scripts/prepare-github-package.mjs
-
-      - name: Publish to GitHub Packages
-        working-directory: .github-package
-        run: npm publish --registry=https://npm.pkg.github.com/ --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
