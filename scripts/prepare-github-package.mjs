@@ -11,7 +11,7 @@ packageJson.name = "@wjc2821296948/xmrig-proxy-client";
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 
-for (const entry of ["src", "tests", "README.md", "LICENSE"]) {
+for (const entry of ["src", "README.md", "LICENSE"]) {
   await cp(path.join(root, entry), path.join(output, entry), { recursive: true });
 }
 
