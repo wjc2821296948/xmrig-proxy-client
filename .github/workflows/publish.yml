@@ -36,6 +36,13 @@ jobs:
       - name: Publish to npmjs.com
         run: npm publish --access public
 
+      - name: Setup GitHub Packages registry
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com/
+          package-manager-cache: false
+
       - name: Prepare GitHub Packages package
         run: node scripts/prepare-github-package.mjs
 
