@@ -18,7 +18,7 @@ for (const [key, expected] of Object.entries(required)) {
   }
 }
 
-if (!/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$/.test(packageJson.version)) {
+if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(packageJson.version)) {
   throw new Error("package.json version must be a valid SemVer string, got " + JSON.stringify(packageJson.version));
 }
 
