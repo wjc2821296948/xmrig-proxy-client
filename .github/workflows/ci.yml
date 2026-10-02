@@ -63,3 +63,20 @@ jobs:
 
       - name: Validate package contents
         run: node scripts/check-package-contents.mjs
+
+  package-install:
+    name: Install packed npm package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Smoke test packed package
+        run: node scripts/smoke-package-install.mjs
