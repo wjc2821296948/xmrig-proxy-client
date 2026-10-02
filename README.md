@@ -12,7 +12,7 @@ npm install xmrig-proxy-client
 
 ## 发布渠道
 
-每次发布 GitHub Release（tag 必须与 `package.json` 版本对应，例如 `v0.1.0`），`.github/workflows/publish.yml` 会自动执行测试并发布到两个注册表：
+每次发布 GitHub Release（tag 必须与 `package.json` 版本对应，例如 `v1.0.0`），`.github/workflows/publish.yml` 会自动执行测试并发布到两个注册表：
 
 - **npmjs.com**：`xmrig-proxy-client`
 - **GitHub Packages**：`@wjc2821296948/xmrig-proxy-client`
