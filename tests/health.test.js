@@ -177,3 +177,121 @@ test("recovery from offline requires two positive samples", () => {
 
   assert.equal(getRecentMinerPeak(tracker), 0);
 });
+
+
+test("missing miners data is offline", () => {
+  const tracker = createStatusTracker();
+
+  assert.deepEqual(
+    getStatusInfo({}, tracker, 0),
+    { cls: "status-offline", text: "离线" },
+  );
+});
+
+test("invalid uptime does not trigger restart detection", () => {
+  const tracker = createStatusTracker();
+
+  assert.deepEqual(
+    getStatusInfo(sample({ now: 2, max: 2, uptime: 100 }), tracker, 0),
+    { cls: "status-online", text: "在线" },
+  );
+
+  assert.deepEqual(
+    getStatusInfo({ miners: { now: 2, max: 2 } }, tracker, 10_000),
+    { cls: "status-online", text: "在线" },
+  );
+});
+
+test("cold-start waiting ends once the uptime window has elapsed", () => {
+  const tracker = createStatusTracker();
+
+  assert.deepEqual(
+    getStatusInfo(sample({ now: 0, max: 0, uptime: 10 }), tracker, 0),
+    { cls: "status-waiting", text: "等待中" },
+  );
+
+  assert.deepEqual(
+    getStatusInfo(sample({ now: 0, max: 0, uptime: 61 }), tracker, 61_000),
+    { cls: "status-offline", text: "离线" },
+  );
+});
+
+test("recovery sample threshold is configurable", () => {
+  const tracker = createStatusTracker({ recoverySamples: 3 });
+
+  getStatusInfo(sample({ now: 2, max: 2, uptime: 100 }), tracker, 0);
+  getStatusInfo(sample({ now: 0, max: 2, uptime: 130 }), tracker, 30_001);
+  getStatusInfo(sample({ now: 0, max: 2, uptime: 150 }), tracker, 50_001);
+
+  assert.deepEqual(
+    getStatusInfo(sample({ now: 1, max: 2, uptime: 160 }), tracker, 60_000),
+    { cls: "status-warning", text: "预警" },
+  );
+
+  assert.deepEqual(
+    getStatusInfo(sample({ now: 1, max: 2, uptime: 170 }), tracker, 70_000),
+    { cls: "status-warning", text: "预警" },
+  );
+
+  assert.deepEqual(
+    getStatusInfo(sample({ now: 1, max: 2, uptime: 180 }), tracker, 80_000),
+    { cls: "status-online", text: "在线" },
+  );
+});
+
+test("negative result deltas do not produce an acceptance rate", () => {
+  const tracker = createStatusTracker();
+
+  getStatusInfo(
+    sample({ now: 3, max: 3, uptime: 100, accepted: 100, rejected: 10 }),
+    tracker,
+    0,
+  );
+
+  getStatusInfo(
+    sample({ now: 3, max: 3, uptime: 110, accepted: 99, rejected: 20 }),
+    tracker,
+    10_000,
+  );
+
+  assert.equal(getAcceptanceRate(tracker), null);
+});
+
+test("stale samples do not produce an acceptance rate", () => {
+  const tracker = createStatusTracker({ healthWindowMs: 5_000 });
+
+  getStatusInfo(
+    sample({ now: 3, max: 3, uptime: 100, accepted: 100, rejected: 0 }),
+    tracker,
+    0,
+  );
+
+  getStatusInfo(
+    sample({ now: 3, max: 3, uptime: 110, accepted: 130, rejected: 20 }),
+    tracker,
+    6_000,
+  );
+
+  assert.equal(getAcceptanceRate(tracker), null);
+});
+
+test("recent miner peak is trimmed outside the configured window", () => {
+  const tracker = createStatusTracker({ peakWindowMs: 5_000 });
+
+  getStatusInfo(sample({ now: 8, max: 8, uptime: 100 }), tracker, 0);
+  getStatusInfo(sample({ now: 2, max: 8, uptime: 101 }), tracker, 4_000);
+  getStatusInfo(sample({ now: 2, max: 8, uptime: 102 }), tracker, 5_001);
+
+  assert.equal(getRecentMinerPeak(tracker), 2);
+});
+
+test("warning ratio is configurable", () => {
+  const tracker = createStatusTracker({ warningRatio: 0.25 });
+
+  getStatusInfo(sample({ now: 8, max: 8, uptime: 100 }), tracker, 0);
+
+  assert.deepEqual(
+    getStatusInfo(sample({ now: 1, max: 8, uptime: 110 }), tracker, 10_000),
+    { cls: "status-warning", text: "预警" },
+  );
+});

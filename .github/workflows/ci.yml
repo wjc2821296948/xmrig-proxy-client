@@ -80,3 +80,25 @@ jobs:
 
       - name: Smoke test packed package
         run: node scripts/smoke-package-install.mjs
+
+  coverage:
+    name: Test coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Run tests with coverage thresholds
+        run: >-
+          node --test --experimental-test-coverage
+          --test-coverage-include='src/**/*.js'
+          --test-coverage-lines=80
+          --test-coverage-branches=70
+          --test-coverage-functions=80
