@@ -29,3 +29,20 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+  package:
+    name: Validate package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Validate package metadata and exports
+        run: node scripts/check-package.mjs
