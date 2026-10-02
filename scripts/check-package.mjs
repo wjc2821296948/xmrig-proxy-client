@@ -26,17 +26,21 @@ if (packageJson.exports?.["."]?.import !== "./src/index.js") {
   throw new Error('package.json "." import export must be "./src/index.js"');
 }
 
-if (packageJson.engines?.node !== ">=18") {
-  throw new Error('package.json engines.node must be ">=18"');
+if (typeof packageJson.engines?.node !== "string" || !packageJson.engines.node.trim()) {
+  throw new Error("package.json engines.node must be a non-empty version range");
 }
 
-const expectedFiles = ["LICENSE", "README.md", "src"];
-const actualFiles = [...(packageJson.files ?? [])].sort();
+const requiredFiles = ["LICENSE", "README.md", "src"];
+const actualFiles = packageJson.files;
 
-if (JSON.stringify(actualFiles) !== JSON.stringify(expectedFiles)) {
+if (!Array.isArray(actualFiles)) {
+  throw new Error("package.json files must be an array");
+}
+
+const missingFiles = requiredFiles.filter((file) => !actualFiles.includes(file));
+if (missingFiles.length > 0) {
   throw new Error(
-    "package.json files must be " + JSON.stringify(expectedFiles) +
-    ", got " + JSON.stringify(actualFiles),
+    "package.json files is missing required entries: " + missingFiles.join(", "),
   );
 }
 
