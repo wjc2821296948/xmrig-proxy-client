@@ -1,3 +1,8 @@
+import type {
+  XMRigProxyMinerStats,
+  XMRigProxyResults,
+} from "./client.d.ts";
+
 export interface StatusTrackerConfig {
   peakWindowMs: number;
   zeroGraceMs: number;
@@ -48,16 +53,8 @@ export interface StatusInfo {
 
 export interface HealthSummary {
   uptime?: number | string;
-  miners?: {
-    now?: number | string;
-    max?: number | string;
-    [key: string]: unknown;
-  };
-  results?: {
-    accepted?: number | string;
-    rejected?: number | string;
-    [key: string]: unknown;
-  };
+  miners?: XMRigProxyMinerStats;
+  results?: XMRigProxyResults;
   [key: string]: unknown;
 }
 
