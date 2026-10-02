@@ -5,7 +5,6 @@ const packageJson = JSON.parse(await readFile("package.json", "utf8"));
 
 const required = {
   name: "xmrig-proxy-client",
-  version: "1.0.0",
   type: "module",
   license: "Apache-2.0",
 };
@@ -17,6 +16,10 @@ for (const [key, expected] of Object.entries(required)) {
       ", got " + JSON.stringify(packageJson[key]),
     );
   }
+}
+
+if (!/^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$/.test(packageJson.version)) {
+  throw new Error("package.json version must be a valid SemVer string, got " + JSON.stringify(packageJson.version));
 }
 
 if (packageJson.exports?.["."]?.import !== "./src/index.js") {
