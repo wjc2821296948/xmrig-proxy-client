@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./src/index.js"
+      "import": "./src/index.js",
+      "types": "./src/index.d.ts"
     }
   },
   "files": [
@@ -36,5 +37,6 @@
   "bugs": {
     "url": "https://github.com/wjc2821296948/xmrig-proxy-client/issues"
   },
-  "homepage": "https://github.com/wjc2821296948/xmrig-proxy-client#readme"
+  "homepage": "https://github.com/wjc2821296948/xmrig-proxy-client#readme",
+  "types": "./src/index.d.ts"
 }
