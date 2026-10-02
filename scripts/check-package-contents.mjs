@@ -2,11 +2,27 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
-const { stdout } = await execFileAsync("npm", ["pack", "--dry-run", "--json"], {
-  encoding: "utf8",
-});
 
-const reports = JSON.parse(stdout);
+let stdout;
+try {
+  ({ stdout } = await execFileAsync("npm", ["pack", "--dry-run", "--json"], {
+    encoding: "utf8",
+  }));
+} catch (error) {
+  const stderr = typeof error?.stderr === "string" ? error.stderr.trim() : "";
+  const detail = stderr || error?.message || "unknown npm error";
+  throw new Error("npm pack --dry-run failed: " + detail);
+}
+
+let reports;
+try {
+  reports = JSON.parse(stdout);
+} catch (error) {
+  throw new Error(
+    "npm pack --dry-run returned invalid JSON: " +
+    (error instanceof Error ? error.message : String(error)),
+  );
+}
 if (!Array.isArray(reports) || reports.length !== 1) {
   throw new Error("Expected npm pack --dry-run to return exactly one package report");
 }
